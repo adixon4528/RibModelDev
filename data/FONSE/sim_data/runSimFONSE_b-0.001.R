@@ -3,10 +3,10 @@ rm(list=ls())
 #read genome
 
 #initializes the files used for the following parameters
-genome.file <- "Scereviciae.fasta"
-phi.file <- "Scereviciae.phi.csv"
-mut.file <- "Scereviciae.mut.csv"
-sel.file <- "SCereviciae.sel.csv"
+genome.file <- "../simFONSE2000.fasta"
+phi.file <- "../S.cer.mut.ref.csv"
+mut.file <- "../selection3ref.csv"
+sel.file <- "../genome_2000.phi.csv"
 
 run.name <- "simulatedFONSE_b-0.001_scaled10000"
 
