@@ -3,14 +3,14 @@ rm(list=ls())
 #read genome
 
 #initializes the files used for the following parameters
-genome.file <- "simulatedFONSE_phiScaled10000_b-0.001.fasta"
-phi.file <- "simFONSE_scaled10000.phi.csv"
-mut.file <- "S.cer.mut.ref.csv"
-sel.file <- "deltaomega_b-0.001.csv"
+genome.file <- "Scereviciae.fasta"
+phi.file <- "Scereviciae.phi.csv"
+mut.file <- "Scereviciae.mut.csv"
+sel.file <- "SCereviciae.sel.csv"
 
 run.name <- "simulatedFONSE_b-0.001_scaled10000"
 
-from.good.values <- TRUE
+from.good.values <- FALSE
 genome <- initializeGenomeObject(genome.file)
 
 #initialize sphi and the number of mixtures, but with FONSE, the 
@@ -28,10 +28,10 @@ parameter <- initializeParameterObject(genome, sphi_init, numMixtures, geneAssig
 
 # initialize MCMC object. The MCMC loop will go for samples * thinning iterations.
 samples <- 1000
-thining <- 100
+thinning <- 10
 adaptiveWidth <- 10
-mcmc <- initializeMCMCObject(samples=samples, thining=thining, adaptive.width=adaptiveWidth, 
-                             est.expression=TRUE, est.csp=TRUE, est.hyper=TRUE)
+mcmc <- initializeMCMCObject(samples=samples, thinning=thinning, adaptive.width=adaptiveWidth, 
+                             est.expression=TRUE, est.csp=TRUE, est.hyper=FALSE)
 # get model object
 model <- initializeModelObject(parameter, "FONSE")
 
@@ -52,7 +52,7 @@ system.time(
   runMCMC(mcmc, genome, model, 16)
 )
 
-full.name <- paste(run.name, samples*thining, sep="_")
+full.name <- paste(run.name, samples*thinning, sep="_")
 
 #Write the .Rdat files for both the parameter object and the MCMC object.
 writeParameterObject(parameter, file=paste(full.name, "ParamObject.Rdat", sep=""))
@@ -63,14 +63,14 @@ pdf(paste(full.name, "MCMC.pdf", sep=""))
 
 #Plots the trace of the log likelihood
 plot(mcmc)
-loglik.trace <- mcmc$getLogLikelihoodTrace()
+loglik.trace <- mcmc$getLogPosteriorTrace()
 acf(loglik.trace)
 
 # plots different aspects of trace. Mixture probability can be ignored since the mixture is always one.
 # Also need to ask Jeremy why SPhi doesn't plot anything.
 trace <- parameter$getTraceObject()
 plot(trace, what = "MixtureProbability")
-plot(trace, what = "SPhi")
+plot(trace, what = "Sphi")
 plot(trace, what = "ExpectedPhi")
 
 mixtureAssignment <- unlist(lapply(1:length(genome),  function(geneIndex){parameter$getEstimatedMixtureAssignmentForGene(samples*0.1, geneIndex)}))
